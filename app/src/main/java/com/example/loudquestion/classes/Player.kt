@@ -1,9 +1,13 @@
 package com.example.loudquestion.classes
 
+import android.annotation.SuppressLint
+import kotlinx.serialization.Serializable
 import java.util.UUID
 
+@SuppressLint("UnsafeOptInUsageError")
+@Serializable
 data class Player(
-    val playerId: UUID = UUID.randomUUID(),
+    val playerId: String = UUID.randomUUID().toString(),
     val playerName: String,
     val playerQuestion: List<Question> = emptyList()
 )

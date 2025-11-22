@@ -1,15 +1,34 @@
 package com.example.loudquestion.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.AndroidViewModel
 import com.example.loudquestion.classes.Game
 import com.example.loudquestion.classes.Player
 import com.example.loudquestion.classes.Question
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
-class LoudQuestionViewModel : ViewModel() {
-    
+const val LOUD_QUESTIONS_STORE_NAME = "load_question"
+
+val GAME_DATA_KEY = stringPreferencesKey("load_game_data")
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = LOUD_QUESTIONS_STORE_NAME)
+
+class LoudQuestionViewModel(application: Application) : AndroidViewModel(application) {
+    val context = getApplication<Application>()
+    var gameData: Game
+
     val initialState = Game(
         activePlayer = null,
         playerList = emptyList(),
@@ -18,10 +37,26 @@ class LoudQuestionViewModel : ViewModel() {
         resolvedQuestion = emptyList(),
         unresolvedQuestion = emptyList()
     )
-    
-    private var _gameVM = MutableStateFlow<Game>(initialState)
+
+    init {
+        runBlocking {
+            val startGameStore = Json.encodeToString<Game>(initialState)
+
+            gameData = Json.decodeFromString<Game>(context.dataStore.data.first()[GAME_DATA_KEY] ?: startGameStore)
+        }
+    }
+
+    private var _gameVM = MutableStateFlow<Game>(gameData)
     val gameVM = _gameVM.asStateFlow()
-    
+
+    suspend fun setContext() {
+            context.dataStore.edit { preferences ->
+                val newGameDataJson = Json.encodeToString<Game>(gameVM.value)
+
+                preferences[GAME_DATA_KEY] = newGameDataJson
+            }
+    }
+
     fun changeGameStatus() {
         _gameVM.update { currentState ->
             val currentGameStatus = currentState.isGameStart

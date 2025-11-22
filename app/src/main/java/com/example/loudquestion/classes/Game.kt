@@ -1,5 +1,10 @@
 package com.example.loudquestion.classes
 
+import android.annotation.SuppressLint
+import kotlinx.serialization.Serializable
+
+@SuppressLint("UnsafeOptInUsageError")
+@Serializable
 data class Game(
     val activePlayer: Player?,
     val playerList: List<Player>,
