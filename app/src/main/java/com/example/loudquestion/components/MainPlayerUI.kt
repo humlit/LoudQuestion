@@ -1,5 +1,6 @@
 package com.example.loudquestion.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.loudquestion.classes.Player
-import com.example.loudquestion.classes.Question
 import com.example.loudquestion.viewmodel.LoudQuestionViewModel
 import kotlinx.coroutines.launch
 
@@ -38,29 +38,22 @@ import kotlinx.coroutines.launch
 fun MainPlayerUI(
     viewModel: LoudQuestionViewModel,
     gameIsStarted: Boolean,
-    unresolvedAnswerList: List<Question>,
-    resolvedAnswerList: List<Question>,
     drawerState: DrawerState,
     playerList: List<Player>
 ) {
     val state by viewModel.gameVM.collectAsState()
     val scope = rememberCoroutineScope()
     val isDialogOpen = state.activePlayer != null
-    val resolvedAnswerListUI = state.resolvedQuestion
-    val unresolvedAnswerListUI = state.unresolvedQuestion
+    val resolvedAnswerList = state.resolvedQuestion
+    val unresolvedAnswerList = state.unresolvedQuestion
     
-    var showSuccessfulQuestion by remember { mutableStateOf(false) }
-    var showFailedQuestion by remember { mutableStateOf(false) }
-    
-    ShowCompletedQuestion(
-        questionList = resolvedAnswerListUI,
-        isShowed = showSuccessfulQuestion,
-        onDismiss = { showSuccessfulQuestion = false })
+    var isCompletedQuestionShowed by remember { mutableStateOf(false) }
     
     ShowCompletedQuestion(
-        questionList = unresolvedAnswerListUI,
-        isShowed = showFailedQuestion,
-        onDismiss = { showFailedQuestion = false })
+        failedQuestionList = unresolvedAnswerList,
+        successQuestionList = resolvedAnswerList,
+        isShowed = isCompletedQuestionShowed,
+        onDismiss = { isCompletedQuestionShowed = false })
     
     DisplayPlayerInfo(viewModel = viewModel, isDialogShowed = isDialogOpen)
     
@@ -72,42 +65,33 @@ fun MainPlayerUI(
                 horizontalArrangement = Arrangement.Absolute.SpaceAround
             ) {
                 Text(
-                    modifier = Modifier.weight(0.4f),
-                    text = when {
+                    modifier = Modifier.weight(0.4f), text = when {
                         gameIsStarted -> "Играем"
                         !gameIsStarted -> "Подготовка"
                         
                         else -> ""
                     }
                 )
-               
-                    IconButton(modifier = Modifier.weight(0.3f),onClick = {
-                        if(unresolvedAnswerListUI.isNotEmpty()){
-                            showFailedQuestion = true
-                        }
-                    }) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Default.Close, null)
-                            Text(text = "${unresolvedAnswerList.size}")
-                        }
-                    }
                 
-                
-                    IconButton(
-                        modifier = Modifier.weight(0.3f), onClick = {
-                        if(resolvedAnswerListUI.isNotEmpty()){
-                            showSuccessfulQuestion = true
-                        }
-                    }) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Default.Done, null)
-                            Text(text = "${resolvedAnswerList.size}")
-                        }
+                Row(
+                    modifier = Modifier.clickable(onClick = {
+                        isCompletedQuestionShowed = true
+                    })
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Close, null)
+                        Text(text = "${unresolvedAnswerList.size}")
                     }
+                    
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Done, null)
+                        Text(text = "${resolvedAnswerList.size}")
+                    }
+                }
             }
         }, navigationIcon = {
             IconButton(onClick = {
@@ -128,3 +112,7 @@ fun MainPlayerUI(
         }
     }
 }
+
+//AnimatedVisibility(
+//newFilterName.isNotEmpty(), enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(), exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+//)

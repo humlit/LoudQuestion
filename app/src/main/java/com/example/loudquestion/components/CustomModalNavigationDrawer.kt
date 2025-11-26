@@ -1,16 +1,21 @@
 package com.example.loudquestion.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,8 +23,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.loudquestion.viewmodel.LoudQuestionViewModel
@@ -27,13 +33,13 @@ import com.example.loudquestion.viewmodel.LoudQuestionViewModel
 @Composable
 fun CustomModalNavigationDrawer(
     viewModel: LoudQuestionViewModel,
-    gameStatusBoolean: Boolean,
     drawerState: DrawerState,
     content: @Composable () -> Unit
 ) {
     val state by viewModel.gameVM.collectAsState()
     var isDialogOpen by remember { mutableStateOf(false) }
     var isDialogShowed by remember { mutableStateOf(false) }
+    var isStateEditShowed by remember { mutableStateOf(false) }
     
     CustomDialogPlayerAdd(viewModel = viewModel, isDialogShowed = isDialogOpen, onDismiss = {
         isDialogOpen = false
@@ -53,18 +59,25 @@ fun CustomModalNavigationDrawer(
                 modifier = Modifier.width(250.dp)
             ) {
                 Text(modifier = Modifier.padding(16.dp), text = "Управление", fontSize = 24.sp)
-                NavigationDrawerItem(modifier = Modifier.padding(top = 40.dp), label = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "Игра активна")
+                
+                NavigationDrawerItem(
+                    label = { Text(text = "Игра активна") },
+                    selected = false,
+                    onClick = {},
+                    badge = {
                         Switch(
-                            checked = gameStatusBoolean,
-                            onCheckedChange = { it == gameStatusBoolean })
-                    }
-                }, selected = false, onClick = { viewModel.changeGameStatus() })
+                            checked = state.isGameStart, onCheckedChange = { newValue ->
+                                viewModel.changeGameStatus(newValue)
+                            }, colors = SwitchDefaults.colors(
+                                checkedThumbColor = Color.White,
+                                uncheckedThumbColor = Color.White,
+                                checkedTrackColor = Color.Green,
+                                uncheckedTrackColor = Color.Red,
+                                checkedBorderColor = Color.Transparent,
+                                uncheckedBorderColor = Color.Transparent
+                            )
+                        )
+                    })
                 
                 HorizontalDivider()
                 
@@ -84,7 +97,48 @@ fun CustomModalNavigationDrawer(
                         onClick = {
                             isDialogShowed = true
                         })
+                    
+                    HorizontalDivider()
+                    
+                    NavigationDrawerItem(label = {
+                        Text(text = "Управление игрой")
+                    }, selected = false, onClick = {
+                        isStateEditShowed = !isStateEditShowed
+                    }, badge = {
+                        val arrowScale by animateFloatAsState(
+                            targetValue = if (!isStateEditShowed) 1f else -1f,
+                            animationSpec = tween(durationMillis = 300),
+                        )
+                        
+                        Icon(
+                            modifier = Modifier.graphicsLayer(scaleY = arrowScale),
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = null
+                        )
+                    })
+                    
+                    AnimatedVisibility(isStateEditShowed) {
+                        Column {
+                            HorizontalDivider()
+                          
+                            NavigationDrawerItem(label = {
+                                Text(text = "Очистить завершённые вопросы")
+                            }, selected = false, onClick = {
+                                viewModel.clearCompletedQuestion()
+                            })
+                            
+                            NavigationDrawerItem(label = {
+                                Text(text = "Сброс игры")
+                            }, selected = false, onClick = {
+                                viewModel.resetGameState()
+                            })
+                            
+                            HorizontalDivider()
+                        }
+                    }
                 }
             }
-        }) { content() }
+        }) {
+        content()
+    }
 }

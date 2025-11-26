@@ -26,9 +26,10 @@ val GAME_DATA_KEY = stringPreferencesKey("load_game_data")
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = LOUD_QUESTIONS_STORE_NAME)
 
 class LoudQuestionViewModel(application: Application) : AndroidViewModel(application) {
+    
     val context = getApplication<Application>()
     var gameData: Game
-
+    
     val initialState = Game(
         activePlayer = null,
         playerList = emptyList(),
@@ -37,32 +38,31 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
         resolvedQuestion = emptyList(),
         unresolvedQuestion = emptyList()
     )
-
+    
     init {
         runBlocking {
             val startGameStore = Json.encodeToString<Game>(initialState)
-
+            
             gameData = Json.decodeFromString<Game>(context.dataStore.data.first()[GAME_DATA_KEY] ?: startGameStore)
         }
     }
-
+    
     private var _gameVM = MutableStateFlow<Game>(gameData)
     val gameVM = _gameVM.asStateFlow()
-
+    
     suspend fun setContext() {
-            context.dataStore.edit { preferences ->
-                val newGameDataJson = Json.encodeToString<Game>(gameVM.value)
-
-                preferences[GAME_DATA_KEY] = newGameDataJson
-            }
+        context.dataStore.edit { preferences ->
+            val newGameDataJson = Json.encodeToString<Game>(gameVM.value)
+            
+            preferences[GAME_DATA_KEY] = newGameDataJson
+        }
     }
-
-    fun changeGameStatus() {
+    
+    fun changeGameStatus(gameStatus: Boolean) {
         _gameVM.update { currentState ->
-            val currentGameStatus = currentState.isGameStart
             
             currentState.copy(
-                isGameStart = !currentGameStatus
+                isGameStart = gameStatus
             )
         }
     }
@@ -178,6 +178,18 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
         }
     }
     
+    fun resetGameState() {
+        _gameVM.update { initialState }
+    }
+    
+    fun clearCompletedQuestion() {
+        _gameVM.update { currentState ->
+            currentState.copy(
+                resolvedQuestion = emptyList(), unresolvedQuestion = emptyList()
+            )
+        }
+    }
+    
     fun unresolveQuestion(question: Question) {
         _gameVM.update { currentState ->
             val unresolveQuestionList = currentState.unresolvedQuestion.toMutableList().apply {
@@ -199,8 +211,7 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
             }
             
             currentState.copy(
-            activePlayer = null,
-                playerList = newPlayerList
+                activePlayer = null, playerList = newPlayerList
             )
         }
     }

@@ -177,9 +177,11 @@ fun DisplayPlayerInfo(
                 }
                 
             } else {
-                val randomQuestion = choiceOfQuestion(
-                    activePlayer = activePlayer, playerList = playerList
-                ) ?: Question(question = "Вопросы кончились")
+                val randomQuestion = remember {
+                    choiceOfQuestion(
+                        activePlayer = activePlayer, playerList = playerList
+                    ) ?: Question(question = "Вопросы кончились")
+                }
                 
                 if (started) {
                     Row(

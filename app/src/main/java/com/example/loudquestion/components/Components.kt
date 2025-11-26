@@ -1,16 +1,19 @@
 package com.example.loudquestion.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,7 +61,8 @@ fun TimerUI(start: Int) {
 
 @Composable
 fun ShowCompletedQuestion(
-    questionList: List<Question>,
+    failedQuestionList: List<Question>,
+    successQuestionList: List<Question>,
     isShowed: Boolean,
     onDismiss: () -> Unit
 ) {
@@ -67,11 +71,33 @@ fun ShowCompletedQuestion(
     Dialog(onDismissRequest = {
         onDismiss()
     }) {
-        LazyColumn(
-            modifier = Modifier.background(color = Color.White)
+        Column(
+            modifier = Modifier
+                .height(500.dp)
+                .background(color = Color.White)
+                .padding(8.dp),
         ) {
-            items(questionList, key = { quest -> quest.questId }) { question ->
-                QuestionDisplayedUI(question)
+            Row(
+                modifier = Modifier.weight(0.9f),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                LazyColumn(modifier = Modifier.weight(0.45f)) {
+                    items(failedQuestionList, key = { quest -> quest.questId }) { question ->
+                        QuestionDisplayedUI(question)
+                    }
+                }
+                
+                Spacer(modifier = Modifier.width(8.dp))
+                
+                VerticalDivider()
+                
+                Spacer(modifier = Modifier.width(8.dp))
+                
+                LazyColumn(modifier = Modifier.weight(0.45f)) {
+                    items(successQuestionList, key = { quest -> quest.questId }) { question ->
+                        QuestionDisplayedUI(question)
+                    }
+                }
             }
         }
     }
