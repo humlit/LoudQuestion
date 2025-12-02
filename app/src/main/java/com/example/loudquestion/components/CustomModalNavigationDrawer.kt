@@ -1,5 +1,6 @@
 package com.example.loudquestion.components
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,21 +39,38 @@ fun CustomModalNavigationDrawer(
     content: @Composable () -> Unit
 ) {
     val state by viewModel.gameVM.collectAsState()
-    var isDialogOpen by remember { mutableStateOf(false) }
-    var isDialogShowed by remember { mutableStateOf(false) }
+    var isPlayerAddDialogOpen by remember { mutableStateOf(false) }
+    var isTimerSetTimeDialogShowed by remember { mutableStateOf(false) }
     var isStateEditShowed by remember { mutableStateOf(false) }
+    var selectedTimerTime by remember { mutableIntStateOf(state.timerTime) }
     
-    CustomDialogPlayerAdd(viewModel = viewModel, isDialogShowed = isDialogOpen, onDismiss = {
-        isDialogOpen = false
-    }, onConfirm = {
-        isDialogOpen = false
-    })
-    
-    CustomDialogTimerSetTime(
+    CustomDialogPlayerAdd(
         viewModel = viewModel,
-        isDialogShowed = isDialogShowed,
-        onDismiss = { isDialogShowed = false },
-        onConfirm = { isDialogShowed = false })
+        isDialogShowed = isPlayerAddDialogOpen,
+        onDismiss = {
+            isPlayerAddDialogOpen = false
+        },
+        onConfirm = {
+            isPlayerAddDialogOpen = false
+        })
+    
+    val listOfNumbersForTimer = mutableListOf<Int>().apply {
+        repeat(130) {
+            add(it + 1)
+        }
+    }.filter { it % 5 == 0 }
+    
+    CustomDialogTimerSetTimeTest(
+        viewModel = viewModel,
+        isDialogShowed = isTimerSetTimeDialogShowed,
+        listTimerNumbers = listOfNumbersForTimer,
+        onDismiss = {
+            viewModel.timerSetTimes(selectedTimerTime)
+            isTimerSetTimeDialogShowed = false
+        },
+        onSelected = { index ->
+            selectedTimerTime = index * 5
+        })
     
     ModalNavigationDrawer(
         drawerState = drawerState, drawerContent = {
@@ -79,65 +98,98 @@ fun CustomModalNavigationDrawer(
                         )
                     })
                 
-                HorizontalDivider()
-                
-                if (!state.isGameStart) {
-                    NavigationDrawerItem(
-                        label = { Text(text = "Добавить игрока") },
-                        selected = false,
-                        onClick = {
-                            isDialogOpen = true
-                        })
-                    
-                    HorizontalDivider()
-                    
-                    NavigationDrawerItem(
-                        label = { Text(text = "Установить время") },
-                        selected = false,
-                        onClick = {
-                            isDialogShowed = true
-                        })
-                    
-                    HorizontalDivider()
-                    
-                    NavigationDrawerItem(label = {
-                        Text(text = "Управление игрой")
-                    }, selected = false, onClick = {
-                        isStateEditShowed = !isStateEditShowed
-                    }, badge = {
-                        val arrowScale by animateFloatAsState(
-                            targetValue = if (!isStateEditShowed) 1f else -1f,
-                            animationSpec = tween(durationMillis = 300),
-                        )
+                //                if (!state.isGameStart) {
+                AnimatedVisibility(!state.isGameStart) {
+                    Column {
+                        HorizontalDivider()
                         
-                        Icon(
-                            modifier = Modifier.graphicsLayer(scaleY = arrowScale),
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = null
-                        )
-                    })
-                    
-                    AnimatedVisibility(isStateEditShowed) {
-                        Column {
-                            HorizontalDivider()
-                          
-                            NavigationDrawerItem(label = {
-                                Text(text = "Очистить завершённые вопросы")
-                            }, selected = false, onClick = {
-                                viewModel.clearCompletedQuestion()
+                        NavigationDrawerItem(
+                            label = { Text(text = "Добавить игрока") },
+                            selected = false,
+                            onClick = {
+                                isPlayerAddDialogOpen = true
                             })
+                        
+                        HorizontalDivider()
+                        
+                        NavigationDrawerItem(
+                            label = { Text(text = "Установить таймер") },
+                            selected = false,
+                            onClick = {
+                                isTimerSetTimeDialogShowed = true
+                            },
+                            badge = { Text(text = "${state.timerTime}") })
+                        
+                        HorizontalDivider()
+                        
+                        NavigationDrawerItem(label = {
+                            Text(text = "Управление игрой")
+                        }, selected = false, onClick = {
+                            isStateEditShowed = !isStateEditShowed
+                        }, badge = {
+                            val arrowScale by animateFloatAsState(
+                                targetValue = if (!isStateEditShowed) 1f else -1f,
+                                animationSpec = tween(durationMillis = 300),
+                            )
                             
-                            NavigationDrawerItem(label = {
-                                Text(text = "Сброс игры")
-                            }, selected = false, onClick = {
-                                viewModel.resetGameState()
-                            })
-                            
-                            HorizontalDivider()
+                            Icon(
+                                modifier = Modifier.graphicsLayer(scaleY = arrowScale),
+                                imageVector = Icons.Default.KeyboardArrowDown,
+                                contentDescription = null
+                            )
+                        })
+                        
+                        AnimatedVisibility(isStateEditShowed) {
+                            Column {
+                                var isCompletedQuestionAlertDialogShowed by remember {
+                                    mutableStateOf(
+                                        false
+                                    )
+                                }
+                                var isGameResetAlertDialogShowed by remember { mutableStateOf(false) }
+                                
+                                HorizontalDivider()
+                                
+                                NavigationDrawerItem(label = {
+                                    Text(text = "Очистить завершённые вопросы")
+                                }, selected = false, onClick = {
+                                    isCompletedQuestionAlertDialogShowed = true
+                                })
+                                
+                                NavigationDrawerItem(label = {
+                                    Text(text = "Сброс игры")
+                                }, selected = false, onClick = {
+                                    isGameResetAlertDialogShowed = true
+                                })
+                                
+                                HorizontalDivider()
+                                
+                                CustomAlertDialog(
+                                    isAlertDialogShowed = isCompletedQuestionAlertDialogShowed,
+                                    onDismiss = {
+                                        isCompletedQuestionAlertDialogShowed = false
+                                    },
+                                    onConfirm = {
+                                        viewModel.clearCompletedQuestion()
+                                        isCompletedQuestionAlertDialogShowed = false
+                                    },
+                                )
+                                
+                                CustomAlertDialog(
+                                    isAlertDialogShowed = isGameResetAlertDialogShowed,
+                                    onDismiss = {
+                                        isGameResetAlertDialogShowed = false
+                                    },
+                                    onConfirm = {
+                                        viewModel.resetGameState()
+                                        isGameResetAlertDialogShowed = false
+                                    },
+                                )
+                            }
                         }
                     }
                 }
-            }
+            } //            }
         }) {
         content()
     }
