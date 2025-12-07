@@ -49,6 +49,7 @@ import com.example.loudquestion.viewmodel.LoudQuestionViewModel
 fun DisplayPlayerInfo(
     viewModel: LoudQuestionViewModel,
     isDialogShowed: Boolean,
+    onFinishTimer: () -> Unit
 ) {
     val state by viewModel.gameVM.collectAsState()
     val activePlayer = state.activePlayer
@@ -198,7 +199,7 @@ fun DisplayPlayerInfo(
                             Text(text = "Провал", color = Color.Black)
                         }
                         
-                        TimerUI(timerSetTime)
+                        TimerUI(timerSetTime, onFinish = { onFinishTimer() })
                         
                         TextButton(onClick = {
                             started = false
@@ -211,6 +212,7 @@ fun DisplayPlayerInfo(
                         }
                     }
                 }
+                
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = randomQuestion.question,

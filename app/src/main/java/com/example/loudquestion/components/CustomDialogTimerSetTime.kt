@@ -1,98 +1,100 @@
 package com.example.loudquestion.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.loudquestion.viewmodel.LoudQuestionViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun CustomDialogTimerSetTime(
-    viewModel: LoudQuestionViewModel,
-    isDialogShowed: Boolean,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
+fun TimerUI(
+    start: Int,
+    onFinish: () -> Unit
 ) {
-    val state by viewModel.gameVM.collectAsState()
-    var timerSetTime by remember { mutableStateOf("${state.timerTime}") }
+    var timer by remember { mutableIntStateOf(start) }
     
-    if (!isDialogShowed) return
+    LaunchedEffect(timer) {
+        if (timer != 0) {
+            delay(1000)
+            timer--
+        } else {
+            onFinish()
+        }
+    }
     
-    Dialog(onDismissRequest = {
-        onDismiss()
-    }) {
-        Column(
+    Text(text = "$timer", fontSize = 32.sp)
+}
+
+@Composable
+fun TimerSetTimeUI(
+    listTimerNumbers: List<Int>,
+    onSelected: (Int) -> Unit
+) {
+    val listState = rememberLazyListState()
+    val fling = rememberSnapFlingBehavior(listState)
+    
+    val itemHeight = 40.dp
+    
+    LaunchedEffect(
+        listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset
+    ) {
+        val index = listState.firstVisibleItemIndex + 2
+        onSelected(index)
+    }
+    
+    Box(
+        contentAlignment = Alignment.Center
+    ) {
+        LazyColumn(
             modifier = Modifier
-                .background(color = Color.White)
-                .padding(8.dp)
+                .fillMaxWidth()
+                .height(itemHeight * 5),
+            verticalArrangement = Arrangement.Center,
+            state = listState,
+            flingBehavior = fling
         ) {
-            TextField(
-                value = timerSetTime,
-                onValueChange = { timerSetTime = it },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Black,
-                    unfocusedIndicatorColor = Color.Black
-                ),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                placeholder = { Text(text = timerSetTime) })
-            
-            Spacer(modifier = Modifier.height(10.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(onClick = {
-                    onDismiss()
-                }) {
-                    Icon(
-                        Icons.Default.Close, contentDescription = null
-                    )
-                }
-                
-                IconButton(onClick = {
-                    viewModel.timerSetTimes(timerSetTime.toInt())
-                    onConfirm()
-                }) {
-                    Icon(
-                        Icons.Default.Done, contentDescription = null
-                    )
+            itemsIndexed(listTimerNumbers) { index, item ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(itemHeight),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "$item")
                 }
             }
         }
+        
+        Box(
+            modifier = Modifier
+                .height(itemHeight)
+                .fillMaxWidth()
+                .background(color = Color.Transparent)
+                .border(width = 2.dp, color = Color.Yellow)
+        )
     }
 }
 
@@ -106,7 +108,7 @@ fun CustomDialogTimerSetTimeTest(
 ) {
     val state by viewModel.gameVM.collectAsState()
     val getTimer = state.timerTime
-
+    
     if (!isDialogShowed) return
     
     Dialog(onDismissRequest = { onDismiss() }) {

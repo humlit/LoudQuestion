@@ -48,6 +48,7 @@ fun MainPlayerUI(
     val unresolvedAnswerList = state.unresolvedQuestion
     
     var isCompletedQuestionShowed by remember { mutableStateOf(false) }
+    var isTimerEndWarningShowed by remember { mutableStateOf(false) }
     
     ShowCompletedQuestion(
         failedQuestionList = unresolvedAnswerList,
@@ -55,7 +56,13 @@ fun MainPlayerUI(
         isShowed = isCompletedQuestionShowed,
         onDismiss = { isCompletedQuestionShowed = false })
     
-    DisplayPlayerInfo(viewModel = viewModel, isDialogShowed = isDialogOpen)
+    TimeEndWarningDialog(isShowed = isTimerEndWarningShowed, onDismiss = {
+        isTimerEndWarningShowed = false
+    })
+    
+    DisplayPlayerInfo(viewModel = viewModel, isDialogShowed = isDialogOpen, onFinishTimer = {
+        isTimerEndWarningShowed = true
+    })
     
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         TopAppBar(title = {
