@@ -81,6 +81,52 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
         }
     }
     
+    fun editQuestion(question: Question) {
+        _gameVM.update { currentState ->
+            val currentActivePlayer = currentState.activePlayer?.playerId
+            
+            val newPlayerList = currentState.playerList.map { player ->
+                if (player.playerId == currentActivePlayer) {
+                    player.copy(
+                        playerQuestion = player.playerQuestion.map { plQuestion ->
+                            if (plQuestion.questId == question.questId) {
+                                plQuestion.copy(
+                                    question = question.question
+                                )
+                            } else plQuestion
+                        })
+                } else player
+            }
+            
+            currentState.copy(
+                playerList = newPlayerList
+            )
+        }
+    }
+    
+    fun changeQuestionReadOnlyStatus(question: Question) {
+        _gameVM.update { currentState ->
+            val currentActivePlayer = currentState.activePlayer?.playerId
+            
+            val newPlayerList = currentState.playerList.map { player ->
+                if (player.playerId == currentActivePlayer) {
+                    player.copy(
+                        playerQuestion = player.playerQuestion.map { plQuestion ->
+                            if (plQuestion.questId == question.questId) {
+                                plQuestion.copy(
+                                    isReadOnly = !plQuestion.isReadOnly
+                                )
+                            } else plQuestion
+                        })
+                } else player
+            }
+            
+            currentState.copy(
+                playerList = newPlayerList
+            )
+        }
+    }
+    
     fun setActivePlayer(player: Player) {
         _gameVM.update { currentState ->
             currentState.copy(
