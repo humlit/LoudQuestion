@@ -17,7 +17,7 @@ import com.example.loudquestion.viewmodel.LoudQuestionViewModel
 fun MainScreen(viewModel: LoudQuestionViewModel) {
     val state by viewModel.gameVM.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
+    
     LaunchedEffect(state) {
         viewModel.setContext()
     }

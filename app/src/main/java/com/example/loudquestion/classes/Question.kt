@@ -7,6 +7,7 @@ import java.util.UUID
 @SuppressLint("UnsafeOptInUsageError")
 @Serializable
 data class Question(
-    val questId: String = UUID.randomUUID().toString(),
+    val questionId: String = getRandomUUID(),
     val question: String,
+    val owner: Player,
 )

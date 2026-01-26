@@ -2,19 +2,26 @@ package com.example.loudquestion.viewmodel
 
 import android.app.Application
 import android.content.Context
+import android.text.style.BackgroundColorSpan
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.loudquestion.classes.Game
 import com.example.loudquestion.classes.Player
 import com.example.loudquestion.classes.Question
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -25,7 +32,7 @@ val GAME_DATA_KEY = stringPreferencesKey("load_game_data")
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = LOUD_QUESTIONS_STORE_NAME)
 
-class LoudQuestionViewModel(application: Application) : AndroidViewModel(application) {
+class LoudQuestionViewModel(application: Application, questions: List<Question>) : AndroidViewModel(application) {
     
     val context = getApplication<Application>()
     var gameData: Game
@@ -55,6 +62,61 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
             val newGameDataJson = Json.encodeToString<Game>(gameVM.value)
             
             preferences[GAME_DATA_KEY] = newGameDataJson
+        }
+    }
+    
+    init {
+        distributionOfQuestionWatcher()
+    }
+    
+    private fun distributionOfQuestionWatcher() {
+        viewModelScope.launch(
+            context = Dispatchers.Default + CoroutineName("BackgroundQuestionWatcher")
+        ) {
+            while (true) {
+                val currentState = _gameVM.value
+                
+                val allPlayersHasNotActiveQuestion = currentState.playerList.all {
+                    it.playerActiveRoundQuestion == null
+                }
+                
+                if (currentState.isGameStart && allPlayersHasNotActiveQuestion) {
+                    distributionOfQuestion()
+                }
+                
+                delay(200)
+            }
+        }
+    }
+    
+    private fun distributionOfQuestion() { //TODO: NOT WORKING. NEED CORRECTING
+        _gameVM.update { currentState ->
+            
+            val players = currentState.playerList.toMutableList()
+            
+            val updatedPlayers = players.map { targetPlayer ->
+                
+                val donors = players.filter {
+                    it.playerId != targetPlayer.playerId && it.playerQuestion.isNotEmpty()
+                }
+                
+                if (donors.isEmpty()) return@map targetPlayer
+                
+                val donor = donors.random()
+                val question = donor.playerQuestion.random()
+                
+                // обновляем донора
+                val donorIndex = players.indexOfFirst { it.playerId == donor.playerId }
+                players[donorIndex] = donor.copy(
+                    playerQuestion = donor.playerQuestion - question
+                )
+                
+                targetPlayer.copy(
+                    playerActiveRoundQuestion = question
+                )
+            }
+            
+            currentState.copy(playerList = updatedPlayers)
         }
     }
     
@@ -102,7 +164,7 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
     ) {
         _gameVM.update { currentState ->
             val activePlayer = currentState.activePlayer ?: return@update currentState
-            val newQuestion = Question(question = question)
+            val newQuestion = Question(question = question, owner = activePlayer)
             
             val newPlayerList = currentState.playerList.map { player ->
                 if (activePlayer.playerId == player.playerId) {
@@ -151,22 +213,34 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
     fun deleteUsedQuestion(question: Question) {
         _gameVM.update { currentState ->
             val newPlayerList = currentState.playerList.map { player ->
-                if (player.playerQuestion.any { it.questId == question.questId }) {
+                if (player.playerQuestion.any { it.questionId == question.questionId }) {
                     player.copy(
                         playerQuestion = player.playerQuestion - question
                     )
                 } else {
                     player
                 }
+                
+                if (player.playerId == currentState.activePlayer?.playerId) {
+                    player.copy(
+                        playerActiveRoundQuestion = null
+                    )
+                } else {
+                    player
+                }
             }
             
+            val activePlayer = currentState.activePlayer?.copy(
+                playerActiveRoundQuestion = null
+            )
+            
             currentState.copy(
-                playerList = newPlayerList
+                activePlayer = activePlayer, playerList = newPlayerList
             )
         }
     }
     
-    fun resolveQuestion(question: Question) {
+    fun addQuestionToResolveList(question: Question) {
         _gameVM.update { currentState ->
             val resolveQuestionList = currentState.resolvedQuestion.toMutableList().apply {
                 add(question)
@@ -190,7 +264,7 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
         }
     }
     
-    fun unresolveQuestion(question: Question) {
+    fun addQuestionToUnresolveList(question: Question) {
         _gameVM.update { currentState ->
             val unresolveQuestionList = currentState.unresolvedQuestion.toMutableList().apply {
                 add(question)

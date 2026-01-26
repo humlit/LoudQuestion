@@ -2,6 +2,7 @@ package com.example.loudquestion.classes
 
 import android.annotation.SuppressLint
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 @SuppressLint("UnsafeOptInUsageError")
 @Serializable
@@ -13,3 +14,5 @@ data class Game(
     val resolvedQuestion: List<Question>,
     val unresolvedQuestion: List<Question>,
 )
+
+fun getRandomUUID(): String = UUID.randomUUID().toString()

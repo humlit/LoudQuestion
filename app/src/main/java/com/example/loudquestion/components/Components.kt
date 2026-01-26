@@ -1,6 +1,5 @@
 package com.example.loudquestion.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -71,7 +70,7 @@ fun ShowCompletedQuestion(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 LazyColumn(modifier = Modifier.weight(0.45f)) {
-                    items(failedQuestionList, key = { quest -> quest.questId }) { question ->
+                    items(failedQuestionList, key = { quest -> quest.questionId }) { question ->
                         QuestionDisplayedUI(question)
                     }
                 }
@@ -83,7 +82,7 @@ fun ShowCompletedQuestion(
                 Spacer(modifier = Modifier.width(8.dp))
                 
                 LazyColumn(modifier = Modifier.weight(0.45f)) {
-                    items(successQuestionList, key = { quest -> quest.questId }) { question ->
+                    items(successQuestionList, key = { quest -> quest.questionId }) { question ->
                         QuestionDisplayedUI(question)
                     }
                 }
