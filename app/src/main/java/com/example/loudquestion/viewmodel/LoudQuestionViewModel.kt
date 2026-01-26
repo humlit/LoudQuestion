@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.loudquestion.classes.Game
 import com.example.loudquestion.classes.Player
 import com.example.loudquestion.classes.Question
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -28,7 +29,10 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = LOU
 class LoudQuestionViewModel(application: Application) : AndroidViewModel(application) {
     
     val context = getApplication<Application>()
-    var gameData: Game
+    
+    private val json = Json {
+        ignoreUnknownKeys = true
+    }
     
     val initialState = Game(
         activePlayer = null,
@@ -39,16 +43,27 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
         unresolvedQuestion = emptyList()
     )
     
-    init {
-        runBlocking {
-            val startGameStore = Json.encodeToString<Game>(initialState)
-            
-            gameData = Json.decodeFromString<Game>(context.dataStore.data.first()[GAME_DATA_KEY] ?: startGameStore)
-        }
-    }
+    var gameData: Game = initialState
+        private set
     
     private var _gameVM = MutableStateFlow<Game>(gameData)
     val gameVM = _gameVM.asStateFlow()
+    
+    init {
+        viewModelScope.launch {
+            val storedGameJson = context.dataStore.data.first()[GAME_DATA_KEY]
+            
+            val game = try {
+                storedGameJson?.let {
+                    json.decodeFromString<Game>(it)
+                } ?: initialState
+            } catch (e: Exception) {
+                initialState
+            }
+            
+            _gameVM.value = game
+        }
+    }
     
     suspend fun setContext() {
         context.dataStore.edit { preferences ->

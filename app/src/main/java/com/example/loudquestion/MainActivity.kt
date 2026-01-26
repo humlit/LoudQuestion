@@ -10,7 +10,7 @@ import com.example.loudquestion.ui.theme.LoudQuestionTheme
 import com.example.loudquestion.viewmodel.LoudQuestionViewModel
 
 class MainActivity : ComponentActivity() {
-    private val viewModel by viewModels<LoudQuestionViewModel>()
+    private val viewModel: LoudQuestionViewModel by viewModels<LoudQuestionViewModel>()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
