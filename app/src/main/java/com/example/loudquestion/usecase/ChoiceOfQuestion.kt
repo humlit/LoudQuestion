@@ -1,4 +1,4 @@
-package com.example.loudquestion.usercase
+package com.example.loudquestion.usecase
 
 import com.example.loudquestion.classes.Player
 import com.example.loudquestion.classes.Question

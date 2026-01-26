@@ -41,8 +41,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.loudquestion.classes.Player
 import com.example.loudquestion.classes.Question
-import com.example.loudquestion.usercase.choiceOfQuestion
 import com.example.loudquestion.viewmodel.LoudQuestionViewModel
 
 @Composable
@@ -53,8 +53,11 @@ fun DisplayPlayerInfo(
 ) {
     val state by viewModel.gameVM.collectAsState()
     val activePlayer = state.activePlayer
-    val playerList = state.playerList
     val timerSetTime = state.timerTime
+    
+    val activePlayerActiveQuestion = activePlayer?.playerActiveRoundQuestion ?: Question(
+        question = "Вопроса нет, чурка, не выёбуйся", owner = Player(playerName = "")
+    )
     
     var questionText by remember { mutableStateOf("") }
     val playerQuest = activePlayer?.playerQuestion ?: emptyList()
@@ -113,7 +116,7 @@ fun DisplayPlayerInfo(
                             width = 1.dp, color = Color.Black
                         )
                 ) {
-                    items(playerQuest, key = { quest -> quest.questId }) { question ->
+                    items(playerQuest, key = { quest -> quest.questionId }) { question ->
                         
                         val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
                             confirmValueChange = { dismissValue ->
@@ -178,11 +181,6 @@ fun DisplayPlayerInfo(
                 }
                 
             } else {
-                val randomQuestion = remember {
-                    choiceOfQuestion(
-                        activePlayer = activePlayer, playerList = playerList
-                    ) ?: Question(question = "Вопросы кончились")
-                }
                 
                 if (started) {
                     Row(
@@ -192,9 +190,9 @@ fun DisplayPlayerInfo(
                         TextButton(onClick = {
                             started = false
                             questionIsShowed = false
+                            viewModel.addQuestionToUnresolveList(activePlayerActiveQuestion)
+                            viewModel.deleteUsedQuestion(activePlayerActiveQuestion)
                             viewModel.resetActivePlayer()
-                            viewModel.unresolveQuestion(randomQuestion)
-                            viewModel.deleteUsedQuestion(randomQuestion)
                         }) {
                             Text(text = "Провал", color = Color.Black)
                         }
@@ -204,9 +202,9 @@ fun DisplayPlayerInfo(
                         TextButton(onClick = {
                             started = false
                             questionIsShowed = false
+                            viewModel.addQuestionToResolveList(activePlayerActiveQuestion)
+                            viewModel.deleteUsedQuestion(activePlayerActiveQuestion)
                             viewModel.resetActivePlayer()
-                            viewModel.resolveQuestion(randomQuestion)
-                            viewModel.deleteUsedQuestion(randomQuestion)
                         }) {
                             Text(text = "Успех", color = Color.Black)
                         }
@@ -215,7 +213,7 @@ fun DisplayPlayerInfo(
                 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = randomQuestion.question,
+                    text = activePlayerActiveQuestion.question,
                     color = if (!questionIsShowed) Color.White else Color.Black,
                     fontSize = 24.sp
                 )
