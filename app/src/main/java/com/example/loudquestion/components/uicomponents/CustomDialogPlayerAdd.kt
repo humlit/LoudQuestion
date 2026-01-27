@@ -1,4 +1,4 @@
-package com.example.loudquestion.components
+package com.example.loudquestion.components.uicomponents
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,14 +26,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.loudquestion.viewmodel.LoudQuestionViewModel
 
 @Composable
 fun CustomDialogPlayerAdd(
-    viewModel: LoudQuestionViewModel,
     isDialogShowed: Boolean,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
+    addPlayer: (String) -> Unit
 ) {
     var playerName by remember { mutableStateOf("") }
     
@@ -49,16 +48,12 @@ fun CustomDialogPlayerAdd(
                 .padding(8.dp)
         ) {
             TextField(
-                value = playerName,
-                onValueChange = { playerName = it },
-                colors = TextFieldDefaults.colors(
+                value = playerName, onValueChange = { playerName = it }, colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Black,
                     unfocusedIndicatorColor = Color.Black
-                ),
-                singleLine = true,
-                placeholder = { Text(text = "Имя игрока") })
+                ), singleLine = true, placeholder = { Text(text = "Имя игрока") })
             
             Spacer(modifier = Modifier.height(10.dp))
             
@@ -78,7 +73,7 @@ fun CustomDialogPlayerAdd(
                 
                 IconButton(onClick = {
                     if (playerName.isNotBlank()) {
-                        viewModel.addPlayer(playerName = playerName)
+                        addPlayer(playerName)
                         playerName = ""
                         onConfirm()
                     }

@@ -1,4 +1,4 @@
-package com.example.loudquestion.components
+package com.example.loudquestion.components.uicomponents
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -124,7 +124,7 @@ fun DisplayPlayerInfo(
                                     }
                                     
                                     SwipeToDismissBoxValue.StartToEnd -> {
-                                        
+                                        viewModel.changeReadOnlyStatusOnQuestion(question = question)
                                         false
                                     }
                                     
@@ -160,7 +160,10 @@ fun DisplayPlayerInfo(
                                     }
                                 }
                             }) {
-                            QuestionDisplayedUI(question = question)
+                            QuestionDisplayedUI(question = question, onConfirmEditingQuestionText = { question ->
+                                viewModel.editingQuestionText(question)
+                                viewModel.changeReadOnlyStatusOnQuestion(question)
+                            })
                         }
                     }
                 }
@@ -186,8 +189,7 @@ fun DisplayPlayerInfo(
                 
                 if (started) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         TextButton(onClick = {
                             started = false
@@ -234,8 +236,7 @@ fun DisplayPlayerInfo(
                         started = true
                     }) {
                         Text(
-                            text = if (!questionIsShowed) "Показать вопрос" else "Скрыть вопрос",
-                            color = Color.Black
+                            text = if (!questionIsShowed) "Показать вопрос" else "Скрыть вопрос", color = Color.Black
                         )
                     }
                 }

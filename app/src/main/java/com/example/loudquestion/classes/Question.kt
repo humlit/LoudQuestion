@@ -9,4 +9,5 @@ import java.util.UUID
 data class Question(
     val questId: String = UUID.randomUUID().toString(),
     val question: String,
+    val isReadOnly: Boolean = true
 )

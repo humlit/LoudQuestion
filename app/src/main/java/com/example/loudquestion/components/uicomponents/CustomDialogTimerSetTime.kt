@@ -1,4 +1,4 @@
-package com.example.loudquestion.components
+package com.example.loudquestion.components.uicomponents
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
