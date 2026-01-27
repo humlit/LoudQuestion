@@ -197,6 +197,60 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
         _gameVM.update { initialState }
     }
     
+    fun editingQuestionText(question: Question) {
+        _gameVM.update { currentState ->
+            val activePlayerId = currentState.activePlayer?.playerId
+            
+            val newPlayerList = currentState.playerList.map { player ->
+                if (player.playerId == activePlayerId) {
+                    player.copy(
+                        playerQuestion = player.playerQuestion.map { plQuestion ->
+                            if (plQuestion.questId == question.questId) {
+                                plQuestion.copy(
+                                    question = question.question
+                                )
+                            } else plQuestion
+                        })
+                } else player
+            }
+            
+            val newActivePlayer = newPlayerList.find { it.playerId == activePlayerId }
+            
+            currentState.copy(
+                activePlayer = newActivePlayer,
+                playerList = newPlayerList
+            )
+        }
+    }
+    
+    fun changeReadOnlyStatusOnQuestion(question: Question) {
+        _gameVM.update { currentState ->
+            val activePlayerId = currentState.activePlayer?.playerId ?: return@update currentState
+            
+            val newPlayerList = currentState.playerList.map { player ->
+                if (player.playerId != activePlayerId) return@map player
+                
+                player.copy(
+                    playerQuestion = player.playerQuestion.map { plQuestion ->
+                        if (plQuestion.questId == question.questId) {
+                            plQuestion.copy(
+                                isReadOnly = !plQuestion.isReadOnly
+                            )
+                        } else plQuestion.copy(
+                            isReadOnly = true
+                        )
+                    })
+            }
+            
+            val newActivePlayer = newPlayerList.find { it.playerId == activePlayerId }
+            
+            currentState.copy(
+                activePlayer = newActivePlayer,
+                playerList = newPlayerList
+            )
+        }
+    }
+    
     fun clearCompletedQuestion() {
         _gameVM.update { currentState ->
             currentState.copy(

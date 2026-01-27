@@ -1,6 +1,5 @@
-package com.example.loudquestion.components
+package com.example.loudquestion.components.uicomponents
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -44,15 +43,11 @@ fun CustomModalNavigationDrawer(
     var isStateEditShowed by remember { mutableStateOf(false) }
     var selectedTimerTime by remember { mutableIntStateOf(state.timerTime) }
     
-    CustomDialogPlayerAdd(
-        viewModel = viewModel,
-        isDialogShowed = isPlayerAddDialogOpen,
-        onDismiss = {
-            isPlayerAddDialogOpen = false
-        },
-        onConfirm = {
-            isPlayerAddDialogOpen = false
-        })
+    CustomDialogPlayerAdd(isDialogShowed = isPlayerAddDialogOpen, onDismiss = {
+        isPlayerAddDialogOpen = false
+    }, onConfirm = {
+        isPlayerAddDialogOpen = false
+    }, addPlayer = { playerName -> viewModel.addPlayer(playerName = playerName) })
     
     val listOfNumbersForTimer = mutableListOf<Int>().apply {
         repeat(130) {
@@ -79,46 +74,35 @@ fun CustomModalNavigationDrawer(
             ) {
                 Text(modifier = Modifier.padding(16.dp), text = "Управление", fontSize = 24.sp)
                 
-                NavigationDrawerItem(
-                    label = { Text(text = "Игра активна") },
-                    selected = false,
-                    onClick = {},
-                    badge = {
-                        Switch(
-                            checked = state.isGameStart, onCheckedChange = { newValue ->
-                                viewModel.changeGameStatus(newValue)
-                            }, colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color.White,
-                                uncheckedThumbColor = Color.White,
-                                checkedTrackColor = Color.Green,
-                                uncheckedTrackColor = Color.Red,
-                                checkedBorderColor = Color.Transparent,
-                                uncheckedBorderColor = Color.Transparent
-                            )
+                NavigationDrawerItem(label = { Text(text = "Игра активна") }, selected = false, onClick = {}, badge = {
+                    Switch(
+                        checked = state.isGameStart, onCheckedChange = { newValue ->
+                            viewModel.changeGameStatus(newValue)
+                        }, colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            uncheckedThumbColor = Color.White,
+                            checkedTrackColor = Color.Green,
+                            uncheckedTrackColor = Color.Red,
+                            checkedBorderColor = Color.Transparent,
+                            uncheckedBorderColor = Color.Transparent
                         )
-                    })
+                    )
+                })
                 
                 //                if (!state.isGameStart) {
                 AnimatedVisibility(!state.isGameStart) {
                     Column {
                         HorizontalDivider()
                         
-                        NavigationDrawerItem(
-                            label = { Text(text = "Добавить игрока") },
-                            selected = false,
-                            onClick = {
-                                isPlayerAddDialogOpen = true
-                            })
+                        NavigationDrawerItem(label = { Text(text = "Добавить игрока") }, selected = false, onClick = {
+                            isPlayerAddDialogOpen = true
+                        })
                         
                         HorizontalDivider()
                         
-                        NavigationDrawerItem(
-                            label = { Text(text = "Установить таймер") },
-                            selected = false,
-                            onClick = {
-                                isTimerSetTimeDialogShowed = true
-                            },
-                            badge = { Text(text = "${state.timerTime}") })
+                        NavigationDrawerItem(label = { Text(text = "Установить таймер") }, selected = false, onClick = {
+                            isTimerSetTimeDialogShowed = true
+                        }, badge = { Text(text = "${state.timerTime}") })
                         
                         HorizontalDivider()
                         

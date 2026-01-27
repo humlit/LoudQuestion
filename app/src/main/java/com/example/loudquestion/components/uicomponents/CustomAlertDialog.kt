@@ -1,4 +1,4 @@
-package com.example.loudquestion.components
+package com.example.loudquestion.components.uicomponents
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
