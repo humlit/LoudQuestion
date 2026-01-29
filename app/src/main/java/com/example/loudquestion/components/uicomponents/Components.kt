@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -42,13 +43,53 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.loudquestion.R
+import com.example.loudquestion.classes.Player
 import com.example.loudquestion.classes.Question
 import kotlinx.coroutines.delay
 
 @Preview
 @Composable
 fun Test() {
-    PlayerImageUI(playerImage = R.drawable.ic_winking_laught_emotion_face, onPlayerImageClick = {})
+    PlayersListUI(
+        Player(
+            playerName = "Mamat", playerImage = R.drawable.ic_winking_laught_emotion_face, playerQuestion = listOf(
+                Question(question = "1"),
+                Question(question = "2"),
+                Question(question = "3"),
+            )
+        )
+    )
+}
+
+@Composable
+fun PlayersListUI(player: Player) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp, bottom = 5.dp, start = 20.dp, end = 20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(modifier = Modifier.size(30.dp), painter = painterResource(player.playerImage), contentDescription = null)
+            
+            Spacer(modifier = Modifier.width(10.dp))
+            
+            Text(text = player.playerName, color = Color.White)
+        }
+        
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "${player.playerQuestion.count()}", color = Color.White)
+            
+            Spacer(modifier = Modifier.width(10.dp))
+            
+            Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
+        }
+    }
 }
 
 @Composable
@@ -57,7 +98,7 @@ fun PlayerImageUI(
     isSelected: Boolean = false,
     onPlayerImageClick: () -> Unit
 ) {
-    val isSelectedBorderColor = if(isSelected) Color.Green else Color.Black
+    val isSelectedBorderColor = if (isSelected) Color.Green else Color.Black
     
     Card(
         modifier = Modifier

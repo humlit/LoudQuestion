@@ -1,6 +1,5 @@
 package com.example.loudquestion.components.uicomponents
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,7 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.loudquestion.R
+import com.example.loudquestion.ui.theme.AppDrawables
 
 @Composable
 fun CustomDialogPlayerAdd(
@@ -40,7 +39,16 @@ fun CustomDialogPlayerAdd(
     addPlayer: (String, Int) -> Unit
 ) {
     var playerName by remember { mutableStateOf("") }
-    val playerImageList = listOf(R.drawable.ic_winking_laught_emotion_face, R.drawable.ic_launcher_foreground)
+    val playerImageList = listOf(
+        AppDrawables.Winking,
+        AppDrawables.ManPeople,
+        AppDrawables.Singer,
+        AppDrawables.Ninja,
+        AppDrawables.PersonBowing,
+        AppDrawables.GirlHandoff,
+        AppDrawables.Chinese,
+        AppDrawables.WomanPeople
+    )
     var currentPlayerImage by remember { mutableIntStateOf(playerImageList[0]) }
     
     if (!isDialogShowed) return
@@ -95,6 +103,7 @@ fun CustomDialogPlayerAdd(
                 IconButton(onClick = {
                     if (playerName.isNotBlank()) {
                         addPlayer(playerName, currentPlayerImage)
+                        currentPlayerImage = playerImageList[0]
                         playerName = ""
                         onConfirm()
                     }

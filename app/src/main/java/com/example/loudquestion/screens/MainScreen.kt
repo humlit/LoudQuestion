@@ -18,10 +18,10 @@ import com.example.loudquestion.viewmodel.MainScreenViewModel
 @Composable
 fun MainScreen(
     viewModel: MainScreenViewModel,
-    onSettingButtonPressed: (Player) -> Unit
+    onSettingButtonPressed: (List<Player>) -> Unit
 ) {
     val state by viewModel.gameVM.collectAsState()
-    val firstPlayer = state.playerList.firstOrNull()
+    val playerList = state.playerList
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     
     LaunchedEffect(state) {
@@ -30,7 +30,7 @@ fun MainScreen(
     
     CustomModalNavigationDrawer(
         viewModel = viewModel, drawerState = drawerState, onSettingButtonPressed = {
-            onSettingButtonPressed(firstPlayer ?: Player(playerName = "Nothing", playerImage = R.drawable.ic_launcher_background))
+            onSettingButtonPressed(playerList)
         }) {
         MainPlayerUI(
             viewModel = viewModel, gameIsStarted = state.isGameStart, drawerState = drawerState, playerList = state.playerList
