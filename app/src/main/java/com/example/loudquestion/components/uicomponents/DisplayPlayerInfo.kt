@@ -43,11 +43,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.loudquestion.classes.Question
 import com.example.loudquestion.usercase.choiceOfQuestion
-import com.example.loudquestion.viewmodel.LoudQuestionViewModel
+import com.example.loudquestion.viewmodel.MainScreenViewModel
 
 @Composable
 fun DisplayPlayerInfo(
-    viewModel: LoudQuestionViewModel,
+    viewModel: MainScreenViewModel,
     isDialogShowed: Boolean,
     onFinishTimer: () -> Unit
 ) {
