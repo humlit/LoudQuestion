@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.loudquestion.viewmodel.LoudQuestionViewModel
+import com.example.loudquestion.viewmodel.MainScreenViewModel
 import kotlinx.coroutines.delay
 
 @Composable
@@ -100,7 +100,7 @@ fun TimerSetTimeUI(
 
 @Composable
 fun CustomDialogTimerSetTimeTest(
-    viewModel: LoudQuestionViewModel,
+    viewModel: MainScreenViewModel,
     isDialogShowed: Boolean,
     listTimerNumbers: List<Int>,
     onDismiss: () -> Unit,

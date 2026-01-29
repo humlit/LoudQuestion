@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.loudquestion.R
 import com.example.loudquestion.classes.Game
 import com.example.loudquestion.classes.Player
 import com.example.loudquestion.classes.Question
@@ -26,7 +27,7 @@ val GAME_DATA_KEY = stringPreferencesKey("load_game_data")
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = LOUD_QUESTIONS_STORE_NAME)
 
-class LoudQuestionViewModel(application: Application) : AndroidViewModel(application) {
+class MainScreenViewModel(application: Application) : AndroidViewModel(application) {
     
     val context = getApplication<Application>()
     
@@ -82,9 +83,12 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
         }
     }
     
-    fun addPlayer(playerName: String) {
+    fun addPlayer(
+        playerName: String,
+        playerImage: Int
+    ) {
         _gameVM.update { currentState ->
-            val newPlayer = Player(playerName = playerName)
+            val newPlayer = Player(playerName = playerName, playerImage = playerImage)
             
             val playerList = currentState.playerList.toMutableList().apply {
                 add(newPlayer)
@@ -217,8 +221,7 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
             val newActivePlayer = newPlayerList.find { it.playerId == activePlayerId }
             
             currentState.copy(
-                activePlayer = newActivePlayer,
-                playerList = newPlayerList
+                activePlayer = newActivePlayer, playerList = newPlayerList
             )
         }
     }
@@ -245,8 +248,7 @@ class LoudQuestionViewModel(application: Application) : AndroidViewModel(applica
             val newActivePlayer = newPlayerList.find { it.playerId == activePlayerId }
             
             currentState.copy(
-                activePlayer = newActivePlayer,
-                playerList = newPlayerList
+                activePlayer = newActivePlayer, playerList = newPlayerList
             )
         }
     }

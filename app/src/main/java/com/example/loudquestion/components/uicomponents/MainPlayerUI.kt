@@ -37,13 +37,13 @@ import com.example.loudquestion.classes.Player
 import com.example.loudquestion.components.commoncomponents.StyledText
 import com.example.loudquestion.ui.theme.DarkIndigo
 import com.example.loudquestion.ui.theme.IndigoGradient
-import com.example.loudquestion.viewmodel.LoudQuestionViewModel
+import com.example.loudquestion.viewmodel.MainScreenViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainPlayerUI(
-    viewModel: LoudQuestionViewModel,
+    viewModel: MainScreenViewModel,
     gameIsStarted: Boolean,
     drawerState: DrawerState,
     playerList: List<Player>

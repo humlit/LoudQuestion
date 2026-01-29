@@ -29,12 +29,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.loudquestion.viewmodel.LoudQuestionViewModel
+import com.example.loudquestion.viewmodel.MainScreenViewModel
 
 @Composable
 fun CustomModalNavigationDrawer(
-    viewModel: LoudQuestionViewModel,
+    viewModel: MainScreenViewModel,
     drawerState: DrawerState,
+    onSettingButtonPressed: () -> Unit,
     content: @Composable () -> Unit
 ) {
     val state by viewModel.gameVM.collectAsState()
@@ -47,7 +48,7 @@ fun CustomModalNavigationDrawer(
         isPlayerAddDialogOpen = false
     }, onConfirm = {
         isPlayerAddDialogOpen = false
-    }, addPlayer = { playerName -> viewModel.addPlayer(playerName = playerName) })
+    }, addPlayer = { playerName, playerImage -> viewModel.addPlayer(playerName = playerName, playerImage = playerImage) })
     
     val listOfNumbersForTimer = mutableListOf<Int>().apply {
         repeat(130) {
@@ -146,8 +147,6 @@ fun CustomModalNavigationDrawer(
                                     isGameResetAlertDialogShowed = true
                                 })
                                 
-                                HorizontalDivider()
-                                
                                 CustomAlertDialog(
                                     isAlertDialogShowed = isCompletedQuestionAlertDialogShowed,
                                     onDismiss = {
@@ -171,6 +170,12 @@ fun CustomModalNavigationDrawer(
                                 )
                             }
                         }
+                        
+                        HorizontalDivider()
+                        
+                        NavigationDrawerItem(label = {
+                            Text(text = "Настройки")
+                        }, selected = false, onClick = { onSettingButtonPressed() })
                     }
                 }
             } //            }

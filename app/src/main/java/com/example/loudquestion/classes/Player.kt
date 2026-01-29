@@ -9,5 +9,6 @@ import java.util.UUID
 data class Player(
     val playerId: String = UUID.randomUUID().toString(),
     val playerName: String,
+    val playerImage: Int,
     val playerQuestion: List<Question> = emptyList()
 )

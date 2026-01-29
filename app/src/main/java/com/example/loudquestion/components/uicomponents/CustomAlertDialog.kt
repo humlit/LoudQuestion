@@ -12,6 +12,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun CustomAlertDialog(
@@ -34,11 +35,11 @@ fun CustomAlertDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(onClick = { onDismiss() }) {
-                    Text(text = dismissButtonText)
+                    Text(text = dismissButtonText, fontSize = 16.sp)
                 }
                 
                 TextButton(onClick = { onConfirm() }) {
-                    Text(text = confirmButtonText)
+                    Text(text = confirmButtonText, fontSize = 16.sp)
                 }
             }
         },
