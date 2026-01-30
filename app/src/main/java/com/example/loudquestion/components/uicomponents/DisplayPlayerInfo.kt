@@ -1,7 +1,7 @@
 package com.example.loudquestion.components.uicomponents
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,18 +13,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -39,9 +39,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.loudquestion.classes.Question
+import com.example.loudquestion.components.commoncomponents.StyledIcon
+import com.example.loudquestion.components.commoncomponents.StyledText
+import com.example.loudquestion.ui.theme.LightIndigo
+import com.example.loudquestion.ui.theme.LightPurple
+import com.example.loudquestion.ui.theme.Typography
 import com.example.loudquestion.usercase.choiceOfQuestion
 import com.example.loudquestion.viewmodel.MainScreenViewModel
 
@@ -66,8 +70,8 @@ fun DisplayPlayerInfo(
     Dialog(onDismissRequest = {}) {
         Column(
             modifier = Modifier
-                .background(color = Color.White)
-                .padding(16.dp)
+                .background(color = LightIndigo)
+                .padding(12.dp)
         ) {
             if (!state.isGameStart) {
                 TextField(
@@ -76,17 +80,15 @@ fun DisplayPlayerInfo(
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Black,
-                        unfocusedIndicatorColor = Color.Black
+                        focusedIndicatorColor = Color.White,
+                        unfocusedIndicatorColor = Color.White
                     ),
-                    placeholder = { Text(text = "Какой вопрос?") },
+                    placeholder = { StyledText(text = "Какой вопрос?") },
                     leadingIcon = {
                         IconButton(onClick = {
                             questionText = ""
                         }) {
-                            Icon(
-                                Icons.Default.Refresh, contentDescription = null
-                            )
+                            StyledIcon(imageVector = Icons.Default.Refresh)
                         }
                     },
                     trailingIcon = {
@@ -96,74 +98,74 @@ fun DisplayPlayerInfo(
                                 questionText = ""
                             }
                         }) {
-                            Icon(
-                                Icons.Default.Done, contentDescription = null
-                            )
+                            StyledIcon(imageVector = Icons.Default.Done)
                         }
                     },
                 )
                 
                 Spacer(modifier = Modifier.height(10.dp))
                 
-                LazyColumn(
+                Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(500.dp)
-                        .border(
-                            width = 1.dp, color = Color.Black
-                        )
+                        .height(500.dp),
+                    color = LightIndigo,
+                    border = BorderStroke(1.dp, LightPurple),
+                    shape = RoundedCornerShape(10)
                 ) {
-                    items(playerQuest, key = { quest -> quest.questId }) { question ->
-                        
-                        val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-                            confirmValueChange = { dismissValue ->
-                                when (dismissValue) {
-                                    SwipeToDismissBoxValue.EndToStart -> {
-                                        viewModel.removeQuestion(question = question)
-                                        true
-                                    }
-                                    
-                                    SwipeToDismissBoxValue.StartToEnd -> {
-                                        viewModel.changeReadOnlyStatusOnQuestion(question = question)
-                                        false
-                                    }
-                                    
-                                    else -> false
-                                }
-                            })
-                        
-                        SwipeToDismissBox(
-                            state = swipeToDismissBoxState, backgroundContent = {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .background(color = Color.Transparent)
-                                ) {
-                                    when (swipeToDismissBoxState.dismissDirection) {
-                                        SwipeToDismissBoxValue.StartToEnd -> {
-                                            Icon(
-                                                modifier = Modifier.align(Alignment.CenterStart),
-                                                imageVector = Icons.Default.Edit,
-                                                contentDescription = null
-                                            )
-                                        }
-                                        
+                    LazyColumn() {
+                        items(playerQuest, key = { quest -> quest.questId }) { question ->
+                            
+                            val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
+                                confirmValueChange = { dismissValue ->
+                                    when (dismissValue) {
                                         SwipeToDismissBoxValue.EndToStart -> {
-                                            Icon(
-                                                modifier = Modifier.align(Alignment.CenterEnd),
-                                                imageVector = Icons.Default.Delete,
-                                                contentDescription = null
-                                            )
+                                            viewModel.removeQuestion(question = question)
+                                            true
                                         }
                                         
-                                        SwipeToDismissBoxValue.Settled -> {}
+                                        SwipeToDismissBoxValue.StartToEnd -> {
+                                            viewModel.changeReadOnlyStatusOnQuestion(question = question)
+                                            false
+                                        }
+                                        
+                                        else -> false
                                     }
-                                }
-                            }) {
-                            QuestionDisplayedUI(question = question, onConfirmEditingQuestionText = { question ->
-                                viewModel.editingQuestionText(question)
-                                viewModel.changeReadOnlyStatusOnQuestion(question)
-                            })
+                                })
+                            
+                            SwipeToDismissBox(
+                                state = swipeToDismissBoxState, backgroundContent = {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(color = Color.Transparent)
+                                    ) {
+                                        when (swipeToDismissBoxState.dismissDirection) {
+                                            SwipeToDismissBoxValue.StartToEnd -> {
+                                                Icon(
+                                                    modifier = Modifier.align(Alignment.CenterStart),
+                                                    imageVector = Icons.Default.Edit,
+                                                    contentDescription = null
+                                                )
+                                            }
+                                            
+                                            SwipeToDismissBoxValue.EndToStart -> {
+                                                Icon(
+                                                    modifier = Modifier.align(Alignment.CenterEnd),
+                                                    imageVector = Icons.Default.Delete,
+                                                    contentDescription = null
+                                                )
+                                            }
+                                            
+                                            SwipeToDismissBoxValue.Settled -> {}
+                                        }
+                                    }
+                                }) {
+                                QuestionDisplayedUI(question = question, onConfirmEditingQuestionText = { question ->
+                                    viewModel.editingQuestionText(question)
+                                    viewModel.changeReadOnlyStatusOnQuestion(question)
+                                })
+                            }
                         }
                     }
                 }
@@ -176,7 +178,7 @@ fun DisplayPlayerInfo(
                     IconButton(onClick = {
                         viewModel.deletePlayer()
                     }) {
-                        Icon(Icons.Default.Delete, null)
+                        StyledIcon(Icons.Default.Delete)
                     }
                 }
                 
@@ -198,7 +200,7 @@ fun DisplayPlayerInfo(
                             viewModel.unresolveQuestion(randomQuestion)
                             viewModel.deleteUsedQuestion(randomQuestion)
                         }) {
-                            Text(text = "Провал", color = Color.Black)
+                            StyledText(text = "Провал")
                         }
                         
                         TimerUI(timerSetTime, onFinish = { onFinishTimer() })
@@ -210,21 +212,26 @@ fun DisplayPlayerInfo(
                             viewModel.resolveQuestion(randomQuestion)
                             viewModel.deleteUsedQuestion(randomQuestion)
                         }) {
-                            Text(text = "Успех", color = Color.Black)
+                            StyledText(text = "Успех")
                         }
                     }
                 }
                 
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = randomQuestion.question,
-                    color = if (!questionIsShowed) Color.White else Color.Black,
-                    fontSize = 24.sp
+                TextField(
+                    value = randomQuestion.question,
+                    onValueChange = {},
+                    readOnly = true,
+                    singleLine = false,
+                    enabled = false,
+                    textStyle = Typography.labelLarge,
+                    colors = TextFieldDefaults.colors(
+                        disabledContainerColor = Color.Transparent,
+                        disabledIndicatorColor = LightPurple,
+                        disabledTextColor = if(questionIsShowed) Color.White else Color.Transparent,
+                    )
                 )
                 
-                Spacer(modifier = Modifier.height(10.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(20.dp))
                 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -235,8 +242,8 @@ fun DisplayPlayerInfo(
                         questionIsShowed = !questionIsShowed
                         started = true
                     }) {
-                        Text(
-                            text = if (!questionIsShowed) "Показать вопрос" else "Скрыть вопрос", color = Color.Black
+                        StyledText(
+                            text = if (!questionIsShowed) "Показать вопрос" else "Скрыть вопрос"
                         )
                     }
                 }
@@ -255,7 +262,7 @@ fun DisplayPlayerInfo(
                     started = false
                     questionIsShowed = false
                 }) {
-                    Icon(Icons.Default.ArrowDropDown, null)
+                    StyledIcon(Icons.Default.ArrowDropDown)
                 }
             }
         }

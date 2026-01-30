@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,6 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.loudquestion.components.commoncomponents.StyledText
+import com.example.loudquestion.ui.theme.Typography
 import com.example.loudquestion.viewmodel.MainScreenViewModel
 import kotlinx.coroutines.delay
 
@@ -45,7 +48,7 @@ fun TimerUI(
         }
     }
     
-    Text(text = "$timer", fontSize = 32.sp)
+    StyledText(text = "$timer", fontSize = 32.sp)
 }
 
 @Composable
@@ -83,7 +86,7 @@ fun TimerSetTimeUI(
                         .height(itemHeight),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "$item")
+                    StyledText(text = "$item")
                 }
             }
         }
@@ -120,7 +123,7 @@ fun CustomDialogTimerSetTimeTest(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "$getTimer")
+                StyledText(text = "$getTimer")
                 
                 TimerSetTimeUI(listTimerNumbers = listTimerNumbers, onSelected = { value ->
                     onSelected(value + 1)

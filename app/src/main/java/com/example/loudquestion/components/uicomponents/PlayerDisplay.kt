@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,9 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.loudquestion.R
 import com.example.loudquestion.classes.Player
-import com.example.loudquestion.components.commoncomponents.StyledCard
+import com.example.loudquestion.components.commoncomponents.StyledPlayerCard
+import com.example.loudquestion.components.commoncomponents.StyledText
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -29,7 +28,7 @@ fun PlayerDisplay(
     onClick: () -> Unit
 ) {
     BoxWithConstraints {
-        StyledCard(
+        StyledPlayerCard(
             modifier = Modifier.size(width = maxWidth, height = 150.dp), onClick = { onClick() }) {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -50,25 +49,9 @@ fun PlayerDisplay(
                 PlayerCardColumn(
                     modifier = Modifier.weight(0.5f)
                 ) {
-                    Text(text = player.playerName, color = Color.White)
+                    StyledText(text = player.playerName)
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun PlayerCardColumn(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .padding(all = 5.dp)
-            .then(modifier),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        content()
     }
 }
