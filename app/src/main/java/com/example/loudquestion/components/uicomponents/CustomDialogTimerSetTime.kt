@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.loudquestion.components.commoncomponents.StyledText
+import com.example.loudquestion.ui.theme.LightIndigo
 import com.example.loudquestion.ui.theme.Typography
 import com.example.loudquestion.viewmodel.MainScreenViewModel
 import kotlinx.coroutines.delay
@@ -116,7 +117,7 @@ fun CustomDialogTimerSetTimeTest(
     
     Dialog(onDismissRequest = { onDismiss() }) {
         Column(
-            modifier = Modifier.background(color = Color.White)
+            modifier = Modifier.background(color = LightIndigo)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

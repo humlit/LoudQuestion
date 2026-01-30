@@ -74,6 +74,8 @@ fun CustomDialogPlayerAdd(
             TextField(
                 modifier = Modifier.fillMaxWidth().padding(start = 5.dp, end = 5.dp, bottom = 10.dp),
                 value = playerName, onValueChange = { playerName = it }, colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     focusedIndicatorColor = LightPurple,
