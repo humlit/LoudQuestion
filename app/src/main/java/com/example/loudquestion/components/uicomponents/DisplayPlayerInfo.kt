@@ -75,9 +75,12 @@ fun DisplayPlayerInfo(
         ) {
             if (!state.isGameStart) {
                 TextField(
+                    modifier = Modifier.fillMaxWidth().padding(start = 10.dp,end = 10.dp, bottom = 10.dp),
                     value = questionText,
                     onValueChange = { questionText = it },
                     colors = TextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.White,
@@ -120,7 +123,7 @@ fun DisplayPlayerInfo(
                                 confirmValueChange = { dismissValue ->
                                     when (dismissValue) {
                                         SwipeToDismissBoxValue.EndToStart -> {
-                                            viewModel.removeQuestion(question = question)
+                                            viewModel.deleteQuestion(question = question)
                                             true
                                         }
                                         
@@ -142,18 +145,16 @@ fun DisplayPlayerInfo(
                                     ) {
                                         when (swipeToDismissBoxState.dismissDirection) {
                                             SwipeToDismissBoxValue.StartToEnd -> {
-                                                Icon(
+                                                StyledIcon(
                                                     modifier = Modifier.align(Alignment.CenterStart),
                                                     imageVector = Icons.Default.Edit,
-                                                    contentDescription = null
                                                 )
                                             }
                                             
                                             SwipeToDismissBoxValue.EndToStart -> {
-                                                Icon(
+                                                StyledIcon(
                                                     modifier = Modifier.align(Alignment.CenterEnd),
                                                     imageVector = Icons.Default.Delete,
-                                                    contentDescription = null
                                                 )
                                             }
                                             

@@ -12,6 +12,7 @@ import java.util.UUID
 @Serializable
 data class Player(
     val playerId: String = UUID.randomUUID().toString(),
+    val activeQuestion: Question? = null,
     val playerName: String,
     val playerImage: Int,
     val playerQuestion: List<Question> = emptyList()

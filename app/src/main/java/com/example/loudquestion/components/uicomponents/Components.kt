@@ -26,7 +26,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
@@ -50,6 +49,7 @@ import com.example.loudquestion.components.commoncomponents.StyledIcon
 import com.example.loudquestion.components.commoncomponents.StyledRow
 import com.example.loudquestion.components.commoncomponents.StyledText
 import com.example.loudquestion.ui.theme.LightIndigo
+import com.example.loudquestion.ui.theme.LightPurple
 import com.example.loudquestion.ui.theme.MidnightBlue
 import com.example.loudquestion.ui.theme.Typography
 import kotlinx.coroutines.delay
@@ -133,9 +133,13 @@ fun QuestionDisplayedUI(
             var questionText by remember(question.questId, question.question) { mutableStateOf(question.question) }
             val questionReadOnlyStatus = question.isReadOnly
             
-            val containerColor = if (questionReadOnlyStatus) Color.Transparent else Color.LightGray
             val textFieldColors = TextFieldDefaults.colors(
-                focusedContainerColor = containerColor, unfocusedContainerColor = containerColor
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+                focusedIndicatorColor = LightPurple,
+                unfocusedIndicatorColor = LightPurple,
             )
             
             TextField(
@@ -145,8 +149,11 @@ fun QuestionDisplayedUI(
                         val newQuestion = Question(
                             questId = question.questId, question = questionText, isReadOnly = questionReadOnlyStatus
                         )
+                        
                         onConfirmEditingQuestionText(newQuestion)
-                    }) { Icon(Icons.Default.Done, contentDescription = null) }
+                    }) {
+                        StyledIcon(Icons.Default.Done)
+                    }
                 }
             }, colors = textFieldColors
             )
@@ -212,8 +219,7 @@ fun ShowCompletedQuestion(
                 LazyColumn(modifier = Modifier.weight(0.45f)) {
                     item {
                         StyledRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
+                            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
                         ) {
                             StyledIcon(Icons.Default.Close)
                         }
@@ -237,8 +243,7 @@ fun ShowCompletedQuestion(
                 LazyColumn(modifier = Modifier.weight(0.45f)) {
                     item {
                         StyledRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
+                            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
                         ) {
                             StyledIcon(Icons.Default.Done)
                         }

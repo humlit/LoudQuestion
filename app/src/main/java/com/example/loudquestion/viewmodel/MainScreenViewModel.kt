@@ -9,7 +9,6 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.loudquestion.R
 import com.example.loudquestion.classes.Game
 import com.example.loudquestion.classes.Player
 import com.example.loudquestion.classes.Question
@@ -143,7 +142,7 @@ class MainScreenViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
     
-    fun removeQuestion(question: Question) {
+    fun deleteQuestion(question: Question) {
         _gameVM.update { currentState ->
             val activePlayer = currentState.activePlayer ?: return@update currentState
             
