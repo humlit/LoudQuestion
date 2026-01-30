@@ -16,7 +16,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,7 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.example.loudquestion.components.commoncomponents.StyledText
+import com.example.loudquestion.ui.theme.LightIndigo
+import com.example.loudquestion.ui.theme.Typography
 import com.example.loudquestion.viewmodel.MainScreenViewModel
 
 @Composable
@@ -71,11 +72,12 @@ fun CustomModalNavigationDrawer(
     ModalNavigationDrawer(
         drawerState = drawerState, drawerContent = {
             ModalDrawerSheet(
-                modifier = Modifier.width(250.dp)
+                modifier = Modifier.width(250.dp),
+                drawerContainerColor = LightIndigo,
             ) {
-                Text(modifier = Modifier.padding(16.dp), text = "Управление", fontSize = 24.sp)
+                StyledText(modifier = Modifier.padding(16.dp), text = "Управление", style = Typography.labelLarge)
                 
-                NavigationDrawerItem(label = { Text(text = "Игра активна") }, selected = false, onClick = {}, badge = {
+                NavigationDrawerItem(label = { StyledText(text = "Игра активна") }, selected = false, onClick = {}, badge = {
                     Switch(
                         checked = state.isGameStart, onCheckedChange = { newValue ->
                             viewModel.changeGameStatus(newValue)
@@ -89,26 +91,24 @@ fun CustomModalNavigationDrawer(
                         )
                     )
                 })
-                
-                //                if (!state.isGameStart) {
                 AnimatedVisibility(!state.isGameStart) {
                     Column {
-                        HorizontalDivider()
+                        HorizontalDivider(color = Color.Black)
                         
-                        NavigationDrawerItem(label = { Text(text = "Добавить игрока") }, selected = false, onClick = {
+                        NavigationDrawerItem(label = { StyledText(text = "Добавить игрока") }, selected = false, onClick = {
                             isPlayerAddDialogOpen = true
                         })
                         
-                        HorizontalDivider()
+                        HorizontalDivider(color = Color.Black)
                         
-                        NavigationDrawerItem(label = { Text(text = "Установить таймер") }, selected = false, onClick = {
+                        NavigationDrawerItem(label = { StyledText(text = "Установить таймер") }, selected = false, onClick = {
                             isTimerSetTimeDialogShowed = true
-                        }, badge = { Text(text = "${state.timerTime}") })
+                        }, badge = { StyledText(text = "${state.timerTime}") })
                         
-                        HorizontalDivider()
+                        HorizontalDivider(color = Color.Black)
                         
                         NavigationDrawerItem(label = {
-                            Text(text = "Управление игрой")
+                            StyledText(text = "Управление игрой")
                         }, selected = false, onClick = {
                             isStateEditShowed = !isStateEditShowed
                         }, badge = {
@@ -120,7 +120,8 @@ fun CustomModalNavigationDrawer(
                             Icon(
                                 modifier = Modifier.graphicsLayer(scaleY = arrowScale),
                                 imageVector = Icons.Default.KeyboardArrowDown,
-                                contentDescription = null
+                                contentDescription = null,
+                                tint = Color.White
                             )
                         })
                         
@@ -133,16 +134,16 @@ fun CustomModalNavigationDrawer(
                                 }
                                 var isGameResetAlertDialogShowed by remember { mutableStateOf(false) }
                                 
-                                HorizontalDivider()
+                                HorizontalDivider(color = Color.Black)
                                 
                                 NavigationDrawerItem(label = {
-                                    Text(text = "Очистить завершённые вопросы")
+                                    StyledText(text = "Очистить завершённые вопросы")
                                 }, selected = false, onClick = {
                                     isCompletedQuestionAlertDialogShowed = true
                                 })
                                 
                                 NavigationDrawerItem(label = {
-                                    Text(text = "Сброс игры")
+                                    StyledText(text = "Сброс игры")
                                 }, selected = false, onClick = {
                                     isGameResetAlertDialogShowed = true
                                 })
@@ -171,14 +172,14 @@ fun CustomModalNavigationDrawer(
                             }
                         }
                         
-                        HorizontalDivider()
+                        HorizontalDivider(color = Color.Black)
                         
                         NavigationDrawerItem(label = {
-                            Text(text = "Настройки")
+                            StyledText(text = "Настройки")
                         }, selected = false, onClick = { onSettingButtonPressed() })
                     }
                 }
-            } //            }
+            }
         }) {
         content()
     }

@@ -45,6 +45,9 @@ import androidx.compose.ui.window.Dialog
 import com.example.loudquestion.R
 import com.example.loudquestion.classes.Player
 import com.example.loudquestion.classes.Question
+import com.example.loudquestion.components.commoncomponents.StyledText
+import com.example.loudquestion.ui.theme.LightIndigo
+import com.example.loudquestion.ui.theme.Typography
 import kotlinx.coroutines.delay
 
 @Preview
@@ -77,13 +80,13 @@ fun PlayersListUI(player: Player) {
             
             Spacer(modifier = Modifier.width(10.dp))
             
-            Text(text = player.playerName, color = Color.White)
+            StyledText(text = player.playerName)
         }
         
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "${player.playerQuestion.count()}", color = Color.White)
+            StyledText(text = "${player.playerQuestion.count()}")
             
             Spacer(modifier = Modifier.width(10.dp))
             
@@ -156,11 +159,27 @@ fun AskedQuestionUI(question: Question) {
         Row(
             modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = question.question)
+            StyledText(text = question.question, style = Typography.bodyMedium)
         }
         Spacer(modifier = Modifier.height(5.dp))
         
         HorizontalDivider()
+    }
+}
+
+@Composable
+fun PlayerCardColumn(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .padding(all = 5.dp)
+            .then(modifier),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        content()
     }
 }
 
@@ -179,7 +198,7 @@ fun ShowCompletedQuestion(
         Column(
             modifier = Modifier
                 .height(500.dp)
-                .background(color = Color.White)
+                .background(color = LightIndigo)
                 .padding(8.dp),
         ) {
             Row(

@@ -1,7 +1,6 @@
 package com.example.loudquestion.components.uicomponents
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
@@ -10,9 +9,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
+import com.example.loudquestion.components.commoncomponents.StyledRow
+import com.example.loudquestion.components.commoncomponents.StyledText
+import com.example.loudquestion.ui.theme.LightIndigo
 
 @Composable
 fun CustomAlertDialog(
@@ -25,21 +26,20 @@ fun CustomAlertDialog(
     if (!isAlertDialogShowed) return
     
     AlertDialog(
-        title = { Text(text = "Подтвердите действие") },
-        icon = { Icon(imageVector = Icons.Default.Warning, contentDescription = null) },
+        title = { StyledText(text = "Подтвердите действие") },
+        icon = { Icon(imageVector = Icons.Default.Warning, contentDescription = null, tint = Color.White) },
+        containerColor = LightIndigo,
         onDismissRequest = { onDismiss() },
         confirmButton = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            StyledRow(
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TextButton(onClick = { onDismiss() }) {
-                    Text(text = dismissButtonText, fontSize = 16.sp)
+                    StyledText(text = dismissButtonText)
                 }
                 
                 TextButton(onClick = { onConfirm() }) {
-                    Text(text = confirmButtonText, fontSize = 16.sp)
+                    StyledText(text = confirmButtonText)
                 }
             }
         },
