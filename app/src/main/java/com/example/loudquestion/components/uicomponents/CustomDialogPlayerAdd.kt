@@ -1,6 +1,7 @@
 package com.example.loudquestion.components.uicomponents
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,12 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -26,10 +26,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.loudquestion.components.commoncomponents.StyledIcon
+import com.example.loudquestion.components.commoncomponents.StyledText
 import com.example.loudquestion.ui.theme.AppDrawables
+import com.example.loudquestion.ui.theme.IndigoGradient
+import com.example.loudquestion.ui.theme.LightIndigo
+import com.example.loudquestion.ui.theme.LightPurple
 
 @Composable
 fun CustomDialogPlayerAdd(
@@ -59,16 +66,19 @@ fun CustomDialogPlayerAdd(
     }) {
         Column(
             modifier = Modifier
-                .background(color = Color.White)
+                .clip(shape = RoundedCornerShape(10))
+                .border(width = 1.dp, color = LightPurple, shape = RoundedCornerShape(10))
+                .background(color = LightIndigo)
                 .padding(8.dp)
         ) {
             TextField(
+                modifier = Modifier.fillMaxWidth().padding(start = 5.dp, end = 5.dp, bottom = 10.dp),
                 value = playerName, onValueChange = { playerName = it }, colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Black,
-                    unfocusedIndicatorColor = Color.Black
-                ), singleLine = true, placeholder = { Text(text = "Имя игрока") })
+                    focusedIndicatorColor = LightPurple,
+                    unfocusedIndicatorColor = LightPurple
+                ), singleLine = true, placeholder = { StyledText(text = "Имя игрока") })
             
             Spacer(modifier = Modifier.height(10.dp))
             
@@ -95,9 +105,7 @@ fun CustomDialogPlayerAdd(
                     onDismiss()
                     playerName = ""
                 }) {
-                    Icon(
-                        Icons.Default.Close, contentDescription = null
-                    )
+                    StyledIcon(Icons.Default.Close)
                 }
                 
                 IconButton(onClick = {
@@ -108,9 +116,7 @@ fun CustomDialogPlayerAdd(
                         onConfirm()
                     }
                 }) {
-                    Icon(
-                        Icons.Default.Done, contentDescription = null
-                    )
+                    StyledIcon(Icons.Default.Done)
                 }
             }
         }
